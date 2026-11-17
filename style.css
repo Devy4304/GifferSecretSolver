@@ -453,6 +453,25 @@ button#submitButton:active {
     transform: scale(0.95);
 }
 
+.corner-link {
+    position: fixed;
+    bottom: 12px;
+    right: 16px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    opacity: 0.4;
+    text-decoration: none;
+    z-index: 10;
+    transition: opacity 0.2s ease, color 0.2s ease;
+    user-select: none;
+}
+
+.corner-link:hover {
+    opacity: 0.9;
+    color: var(--text-main);
+    text-decoration: underline;
+}
+
 @media (max-width: 480px) {
     .container {
         padding: 24px 20px;

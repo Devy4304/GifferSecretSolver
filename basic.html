@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giffer Secret Solver (Basic)</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px auto;
+            max-width: 500px;
+            padding: 0 15px;
+            color: #222;
+            line-height: 1.5;
+        }
+        h2 {
+            margin-bottom: 5px;
+        }
+        p {
+            color: #555;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        input[type="text"] {
+            padding: 6px 10px;
+            font-size: 14px;
+            width: 70%;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 6px 12px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .results {
+            margin-top: 20px;
+            border-top: 1px solid #ccc;
+            padding-top: 15px;
+        }
+        .result-item {
+            margin-bottom: 10px;
+        }
+        .result-label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 3px;
+        }
+        .result-value {
+            font-family: monospace;
+            font-size: 15px;
+            background: #eee;
+            padding: 4px 8px;
+            display: inline-block;
+            min-width: 200px;
+            word-break: break-all;
+        }
+        .nav-link {
+            margin-top: 25px;
+            font-size: 13px;
+        }
+        .nav-link a {
+            color: #0066cc;
+        }
+    </style>
+</head>
+<body>
+    <h2>Giffer Secret Solver</h2>
+    <p>Get the secrets for Unit 10.3 on Giffer Reborn effortlessly.</p>
+
+    <div class="form-group">
+        <label for="userInput">Enter your name:</label>
+        <input id="userInput" type="text" placeholder="e.g. John Smith" autofocus>
+        <button id="submitButton" type="button">Calculate</button>
+    </div>
+
+    <div class="results" id="outputArea">
+        <div class="result-item">
+            <span class="result-label">Secret Phrase:</span>
+            <span class="result-value" id="secretPhrase">-</span>
+            <button type="button" onclick="copyText('secretPhrase', this)">Copy</button>
+        </div>
+        <div class="result-item">
+            <span class="result-label">Decoded Phrase:</span>
+            <span class="result-value" id="decodedPhrase">-</span>
+            <button type="button" onclick="copyText('decodedPhrase', this)">Copy</button>
+        </div>
+    </div>
+
+    <div class="nav-link">
+        <a href="index.html">&larr; Switch to modern UI version</a>
+    </div>
+
+    <script>
+        const phrases = [
+            "BRIGHTDAYSCOMETHFAST",
+            "LOVELIVESINYOURHEART",
+            "KINDNESSISALWAYSCOOL",
+            "YOURBESTISGOODENOUGH",
+            "DREAMSNEEDDAILYGRIND",
+            "COURAGEMAKESTRUTHFUL",
+            "HAPPYHEARTSHAREAMORE",
+            "GRATEFULFORSMALLACTS",
+            "BELIEVEINYOUROWNWAYS",
+            "LAUGHTERISEVERYWHERE",
+            "JOYFOUNDINEVERYTHING",
+            "SUCCESSISINSIDEOFALL",
+            "YESTODAYISYOURCHANCE",
+            "LISTENANDGROWDAILYOK",
+            "PEACESTARTSWITHINYOU",
+            "FRIENDSAREGOLDENLOVE",
+            "THINKSOMETHINGGOODOK",
+            "POSITIVITYHELPSUSALL",
+            "MAYSUNSHINEFOLLOWYOU",
+            "ADVENTUREAWAITYOUNOW",
+            "BETHELIGHTYOUWISHTOC",
+            "SMALLACTSMEANTHEMOST",
+        ];
+
+        function toHash(string) {
+            let hash = 0;
+
+            if (string.length == 0) return hash;
+
+            for (let i = 0; i < string.length; i++) {
+                let char = string.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+
+            return hash;
+        }
+
+        function getShiftValues(passphrase) {
+            return passphrase.split('').map(char => char.charCodeAt(0) - 'A'.charCodeAt(0));
+        }
+
+        function decodeWord(encodedWord, passphrase) {
+            const shifts = getShiftValues(passphrase);
+            return encodedWord.split('').map((char, index) => {
+                const shift = shifts[index % shifts.length];
+                const newCharCode = ((char.charCodeAt(0) - 'A'.charCodeAt(0) - shift + 26) % 26) + 'A'.charCodeAt(0);
+                return String.fromCharCode(newCharCode);
+            }).join('');
+        }
+
+        function encodeWord(word, passphrase) {
+            const shifts = getShiftValues(passphrase);
+            return word.split('').map((char, index) => {
+                const shift = shifts[index % shifts.length];
+                const newCharCode = ((char.charCodeAt(0) - 'A'.charCodeAt(0) + shift) % 26) + 'A'.charCodeAt(0);
+                return String.fromCharCode(newCharCode);
+            }).join('');
+        }
+
+        function phraseForName(name) {
+            return phrases[Math.abs(toHash(name) % phrases.length)];
+        }
+
+        const inputField = document.getElementById('userInput');
+        const submitButton = document.getElementById('submitButton');
+
+        const secretPhrase = document.getElementById('secretPhrase');
+        const decodedPhrase = document.getElementById('decodedPhrase');
+
+        function calculate() {
+            const name = inputField.value;
+
+            const selectedPhrase = phraseForName(name);
+
+            secretPhrase.textContent = encodeWord(selectedPhrase.toUpperCase(), name.toUpperCase());
+            decodedPhrase.textContent = selectedPhrase.toUpperCase();
+        }
+
+        submitButton.addEventListener('click', calculate);
+
+        inputField.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                calculate();
+            }
+        });
+
+        function copyText(elementId, btnElement) {
+            const text = document.getElementById(elementId).textContent;
+            if (text && text !== '-') {
+                navigator.clipboard.writeText(text).then(() => {
+                    const originalText = btnElement.textContent;
+                    btnElement.textContent = 'Copied!';
+                    setTimeout(() => {
+                        btnElement.textContent = originalText;
+                    }, 1500);
+                }).catch(() => {
+                    const temp = document.createElement('textarea');
+                    temp.value = text;
+                    document.body.appendChild(temp);
+                    temp.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(temp);
+
+                    const originalText = btnElement.textContent;
+                    btnElement.textContent = 'Copied!';
+                    setTimeout(() => {
+                        btnElement.textContent = originalText;
+                    }, 1500);
+                });
+            }
+        }
+    </script>
+</body>
+</html>
