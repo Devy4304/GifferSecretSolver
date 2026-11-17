@@ -26,11 +26,15 @@
 [data-theme="light"] {
     --primary: #4f46e5;
     --primary-hover: #4338ca;
-    --primary-light: rgba(79, 70, 229, 0.1);
+    --primary-light: rgba(79, 70, 229, 0.12);
     --bg-base: #f8fafc;
-    --bg-gradient: radial-gradient(circle at 50% 10%, #e0e7ff 0%, #f1f5f9 50%, #f8fafc 100%);
-    --card-bg: rgba(255, 255, 255, 0.92);
-    --card-border: rgba(226, 232, 240, 0.9);
+    --bg-gradient: radial-gradient(circle at 10% 15%, #e0e7ff 0%, transparent 40%),
+                   radial-gradient(circle at 90% 10%, #fae8ff 0%, transparent 35%),
+                   radial-gradient(circle at 85% 85%, #e0f2fe 0%, transparent 40%),
+                   radial-gradient(circle at 15% 85%, #fce7f3 0%, transparent 35%),
+                   radial-gradient(circle at 50% 45%, #ffffff 0%, #f1f5f9 100%);
+    --card-bg: rgba(255, 255, 255, 0.90);
+    --card-border: rgba(226, 232, 240, 0.95);
     --text-main: #0f172a;
     --text-muted: #64748b;
     --label-color: #334155;
@@ -41,8 +45,8 @@
     --result-bg: #f8fafc;
     --result-box-bg: #f1f5f9;
     --result-val: #0284c7;
-    --code-symbol-color: #6366f1;
-    --shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.12), 0 0 25px rgba(79, 70, 229, 0.08);
+    --code-symbol-color: #4f46e5;
+    --shadow: 0 20px 40px -15px rgba(79, 70, 229, 0.14), 0 0 25px rgba(99, 102, 241, 0.08);
 }
 
 * {
@@ -85,6 +89,31 @@ body {
     opacity: 0.06;
     user-select: none;
     animation: floatSymbol ease-in-out infinite alternate;
+}
+
+/* Light mode enhanced symbol contrast and colorful syntax accents */
+[data-theme="light"] .code-symbol {
+    animation-name: floatSymbolLight;
+}
+
+[data-theme="light"] .code-symbol:nth-child(5n+1) {
+    color: #4f46e5;
+}
+
+[data-theme="light"] .code-symbol:nth-child(5n+2) {
+    color: #0284c7;
+}
+
+[data-theme="light"] .code-symbol:nth-child(5n+3) {
+    color: #7c3aed;
+}
+
+[data-theme="light"] .code-symbol:nth-child(5n+4) {
+    color: #059669;
+}
+
+[data-theme="light"] .code-symbol:nth-child(5n+5) {
+    color: #db2777;
 }
 
 /* Dense distributed background symbol coordinates and sizing */
@@ -140,6 +169,20 @@ body {
     100% {
         transform: translateY(-18px) rotate(5deg) scale(1.05);
         opacity: 0.04;
+    }
+}
+
+@keyframes floatSymbolLight {
+    0% {
+        transform: translateY(0px) rotate(0deg) scale(1);
+        opacity: 0.22;
+    }
+    50% {
+        opacity: 0.38;
+    }
+    100% {
+        transform: translateY(-18px) rotate(5deg) scale(1.05);
+        opacity: 0.22;
     }
 }
 
