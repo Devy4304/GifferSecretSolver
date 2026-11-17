@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giffer Secret Solver</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="code-bg" aria-hidden="true">
+        <span class="code-symbol symbol-1">{ }</span>
+        <span class="code-symbol symbol-2">&lt;/&gt;</span>
+        <span class="code-symbol symbol-3">[ ]</span>
+        <span class="code-symbol symbol-4">const</span>
+        <span class="code-symbol symbol-5">=&gt;</span>
+        <span class="code-symbol symbol-6">010101</span>
+        <span class="code-symbol symbol-7">0x1F</span>
+        <span class="code-symbol symbol-8">// cipher</span>
+        <span class="code-symbol symbol-9">fn()</span>
+        <span class="code-symbol symbol-10">&amp;&amp;</span>
+        <span class="code-symbol symbol-11">/* */</span>
+        <span class="code-symbol symbol-12">&lt;dev&gt;</span>
+        <span class="code-symbol symbol-13">return</span>
+        <span class="code-symbol symbol-14">===</span>
+        <span class="code-symbol symbol-15">0x7E</span>
+        <span class="code-symbol symbol-16">let</span>
+        <span class="code-symbol symbol-17">!=</span>
+        <span class="code-symbol symbol-18">async</span>
+        <span class="code-symbol symbol-19">await</span>
+        <span class="code-symbol symbol-20">import</span>
+        <span class="code-symbol symbol-21">export</span>
+        <span class="code-symbol symbol-22">#include</span>
+        <span class="code-symbol symbol-23">def</span>
+        <span class="code-symbol symbol-24">null</span>
+        <span class="code-symbol symbol-25">void 0</span>
+        <span class="code-symbol symbol-26">::</span>
+        <span class="code-symbol symbol-27">...</span>
+        <span class="code-symbol symbol-28">0b1100</span>
+        <span class="code-symbol symbol-29">&lt;T&gt;</span>
+        <span class="code-symbol symbol-30">try</span>
+        <span class="code-symbol symbol-31">catch</span>
+        <span class="code-symbol symbol-32">||</span>
+        <span class="code-symbol symbol-33">ptr*</span>
+        <span class="code-symbol symbol-34">hash()</span>
+        <span class="code-symbol symbol-35">class</span>
+        <span class="code-symbol symbol-36">@decor</span>
+        <span class="code-symbol symbol-37">yield</span>
+        <span class="code-symbol symbol-38">&lt;!-- --&gt;</span>
+        <span class="code-symbol symbol-39">~bin</span>
+        <span class="code-symbol symbol-40">0xFF</span>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <div class="header-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+            </div>
+            <h2>Giffer Secret Solver</h2>
+            <p>Get the secrets for Unit 10.3 on Giffer Reborn effortlessly.</p>
+        </div>
+
+        <div class="form-group">
+            <label for="userInput">Enter your name:</label>
+            <div class="input-row">
+                <input id="userInput" type="text" placeholder="e.g. John Smith" autocomplete="off" autofocus>
+                <button id="submitButton" type="button">Calculate</button>
+            </div>
+        </div>
+
+        <div class="results" id="outputArea">
+            <div class="results-header">
+                <h3>Results</h3>
+            </div>
+            <div class="result-item">
+                <span class="result-label">Secret Phrase</span>
+                <div class="result-box">
+                    <span class="result-value" id="secretPhrase">-</span>
+                    <button class="copy-btn" type="button" title="Copy to clipboard" onclick="copyText('secretPhrase', this)">Copy</button>
+                </div>
+            </div>
+            <div class="result-item">
+                <span class="result-label">Decoded Phrase</span>
+                <div class="result-box">
+                    <span class="result-value" id="decodedPhrase">-</span>
+                    <button class="copy-btn" type="button" title="Copy to clipboard" onclick="copyText('decodedPhrase', this)">Copy</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const phrases = [
+            "BRIGHTDAYSCOMETHFAST",
+            "LOVELIVESINYOURHEART",
+            "KINDNESSISALWAYSCOOL",
+            "YOURBESTISGOODENOUGH",
+            "DREAMSNEEDDAILYGRIND",
+            "COURAGEMAKESTRUTHFUL",
+            "HAPPYHEARTSHAREAMORE",
+            "GRATEFULFORSMALLACTS",
+            "BELIEVEINYOUROWNWAYS",
+            "LAUGHTERISEVERYWHERE",
+            "JOYFOUNDINEVERYTHING",
+            "SUCCESSISINSIDEOFALL",
+            "YESTODAYISYOURCHANCE",
+            "LISTENANDGROWDAILYOK",
+            "PEACESTARTSWITHINYOU",
+            "FRIENDSAREGOLDENLOVE",
+            "THINKSOMETHINGGOODOK",
+            "POSITIVITYHELPSUSALL",
+            "MAYSUNSHINEFOLLOWYOU",
+            "ADVENTUREAWAITYOUNOW",
+            "BETHELIGHTYOUWISHTOC",
+            "SMALLACTSMEANTHEMOST",
+        ];
+
+        function toHash(string) {
+            let hash = 0;
+
+            if (string.length == 0) return hash;
+
+            for (let i = 0; i < string.length; i++) {
+                let char = string.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+
+            return hash;
+        }
+
+        function getShiftValues(passphrase) {
+            return passphrase.split('').map(char => char.charCodeAt(0) - 'A'.charCodeAt(0));
+        }
+
+        function decodeWord(encodedWord, passphrase) {
+            const shifts = getShiftValues(passphrase);
+            return encodedWord.split('').map((char, index) => {
+                const shift = shifts[index % shifts.length];
+                const newCharCode = ((char.charCodeAt(0) - 'A'.charCodeAt(0) - shift + 26) % 26) + 'A'.charCodeAt(0);
+                return String.fromCharCode(newCharCode);
+            }).join('');
+        }
+
+        function encodeWord(word, passphrase) {
+            const shifts = getShiftValues(passphrase);
+            return word.split('').map((char, index) => {
+                const shift = shifts[index % shifts.length];
+                const newCharCode = ((char.charCodeAt(0) - 'A'.charCodeAt(0) + shift) % 26) + 'A'.charCodeAt(0);
+                return String.fromCharCode(newCharCode);
+            }).join('');
+        }
+
+        function phraseForName(name) {
+            return phrases[Math.abs(toHash(name) % phrases.length)];
+        }
+
+        const inputField = document.getElementById('userInput');
+        const submitButton = document.getElementById('submitButton');
+
+        const secretPhrase = document.getElementById('secretPhrase');
+        const decodedPhrase = document.getElementById('decodedPhrase');
+
+        function calculate() {
+            const name = inputField.value;
+
+            const selectedPhrase = phraseForName(name);
+
+            secretPhrase.textContent = encodeWord(selectedPhrase.toUpperCase(), name.toUpperCase());
+            decodedPhrase.textContent = selectedPhrase.toUpperCase();
+        }
+
+        submitButton.addEventListener('click', calculate);
+
+        inputField.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                calculate();
+            }
+        });
+
+        function copyText(elementId, btnElement) {
+            const text = document.getElementById(elementId).textContent;
+            if (text && text !== '-') {
+                navigator.clipboard.writeText(text).then(() => {
+                    const originalText = btnElement.textContent;
+                    btnElement.textContent = 'Copied!';
+                    btnElement.style.color = '#34d399';
+                    setTimeout(() => {
+                        btnElement.textContent = originalText;
+                        btnElement.style.color = '';
+                    }, 1500);
+                }).catch(() => {
+                    // Fallback if clipboard API fails
+                    const temp = document.createElement('textarea');
+                    temp.value = text;
+                    document.body.appendChild(temp);
+                    temp.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(temp);
+
+                    const originalText = btnElement.textContent;
+                    btnElement.textContent = 'Copied!';
+                    btnElement.style.color = '#34d399';
+                    setTimeout(() => {
+                        btnElement.textContent = originalText;
+                        btnElement.style.color = '';
+                    }, 1500);
+                });
+            }
+        }
+    </script>
+</body>
+</html>
